@@ -19,39 +19,7 @@ This project is a web-based application that allows users to digitally sign and 
 ## 📁 Project Structure
 
 WEB_CHU-KI-SO1/
-│
-├── keys/
-│
-│ ├── receiver_private.pem
-│ ├── receiver_public.pem
-│ ├── sender_public.pem
-│ ├── sender_private.pem
-│
-│
-├── received_files/_
-│ └── 
-│
-├── signed_file
-│ └── (nơi chứa thông tin về file sau khi ký)
-│
-├── upl
-│ └── (file upload)
-│
-├── user_keys/_
-│
-├── templ
-│ ├── generate_key.html
-│ ├── base.html
-│ ├── index.html
-│ ├── sender.html
-│ ├── receiver.html
-│
-│
-├── main.py # File chính chạy Flask app
-└── README.md # Tài liệu dự án
-
-
----
+![{C692E172-E6F2-4627-926F-BB1B546C5EB3}](https://github.com/user-attachments/assets/92b0437a-ae57-4bd5-93c9-c0e0a98585d9)
 
 ## ⚙️ Hướng dẫn cài đặt
 

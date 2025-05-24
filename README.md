@@ -15,21 +15,6 @@ This project is a web-based application that allows users to digitally sign and 
 
 ---
 
-## 🖥️ Demo UI
-
-### Home
-![Home Page](screenshots/home.png)
-
-### Sign File
-![Sender Page](screenshots/sender.png)
-
-### Verify File
-![Receiver Page](screenshots/receiver.png)
-
-### Generate Keys
-![Generate Keys Page](screenshots/generate_keys.png)
-
----
 
 ## 📁 Project Structure
 
@@ -37,25 +22,28 @@ WEB_CHU-KI-SO1/
 │
 ├── keys/
 │
-│ ├── receiver
+│ ├── receiver_private.pem
+│ ├── receiver_public.pem
+│ ├── sender_public.pem
 │ ├── sender_private.pem
 │
 │
 ├── received_files/_
-│ └── temp
+│ └── 
 │
-├── s
-│ └── sdasdasd.txt.info
+├── signed_file
+│ └── (nơi chứa thông tin về file sau khi ký)
 │
 ├── upl
-│ └── sdasdasd.txt
+│ └── (file upload)
 │
 ├── user_keys/_
 │
 ├── templ
-│ ├
-│ ├──
-│ ├── sen
+│ ├── generate_key.html
+│ ├── base.html
+│ ├── index.html
+│ ├── sender.html
 │ ├── receiver.html
 │
 │
@@ -67,15 +55,15 @@ WEB_CHU-KI-SO1/
 
 ## ⚙️ Hướng dẫn cài đặt
 
-### 1. Clone dự án
-
-git clone https://github.com/yourusername/WEB_CHU-KI-SO1.git
+### 1. Cài đặt môi trường ảo dự án
 cd WEB_CHU-KI-SO1
 python -m venv venv
 source venv/bin/activate     # Linux/macOS
 venv\Scripts\activate        # Windows
+
 ### 2. Cài thư viện
 py -m pip install flask-wtf  
+
 ### 3. Chạy ứng dụng
 python main.py
 
@@ -103,6 +91,7 @@ Dự án được phát hành dưới giấy phép MIT License – sử dụng t
 👨‍💻 Tác giả
 Developed by Lich
 
+## 🖥️ Demo UI
 ![image](https://github.com/user-attachments/assets/da1c8efe-a2e5-47ac-8341-0a40550a0852)
 ![image](https://github.com/user-attachments/assets/9c60e97d-ba48-40ae-83b5-6b4ab6c8997c)
 ![{1C33C4B2-BCE3-42AE-BDF3-6D1BC1DE367F}](https://github.com/user-attachments/assets/b022fddf-2a99-4fdf-8f44-4d5708feb197)

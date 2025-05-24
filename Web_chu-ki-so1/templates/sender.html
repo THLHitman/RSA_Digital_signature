@@ -1,0 +1,388 @@
+<!-- templates/sender.html -->
+{% extends "base.html" %}
+{% block title %}Sender - Sign File{% endblock %}
+{% block content %}
+<style>
+  .page-header {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 16px;
+    margin-bottom: 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(255,255,255,0.05) 10px,
+      rgba(255,255,255,0.05) 20px
+    );
+    animation: slide 20s linear infinite;
+  }
+  
+  @keyframes slide {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+  
+  .page-header-content {
+    position: relative;
+    z-index: 1;
+  }
+  
+  .upload-section {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+    border: 2px dashed #e2e8f0;
+    transition: all 0.3s ease;
+  }
+  
+  .upload-section:hover {
+    border-color: #ff6b6b;
+    box-shadow: 0 15px 40px rgba(255,107,107,0.15);
+  }
+  
+  .file-input-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+  }
+  
+  .file-input {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fafc;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+  }
+  
+  .file-input:focus {
+    outline: none;
+    border-color: #ff6b6b;
+    box-shadow: 0 0 0 3px rgba(255,107,107,0.1);
+  }
+  
+  .sign-btn {
+    background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+    border: none;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    margin-top: 1rem;
+    width: 100%;
+  }
+  
+  .sign-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+  }
+  
+  .sign-btn:hover::before {
+    left: 100%;
+  }
+  
+  .sign-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(255,107,107,0.3);
+  }
+  
+  .signed-files-section {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  }
+  
+  .section-title {
+    color: #2d3748;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  
+  .custom-table thead {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+  }
+  
+  .custom-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .custom-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    transition: background-color 0.2s ease;
+  }
+  
+  .custom-table tbody tr:hover {
+    background-color: #f8fafc;
+  }
+  
+  .custom-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+  
+  .signature-cell {
+    font-family: 'Courier New', monospace;
+    background: #f1f5f9;
+    border-radius: 6px;
+    padding: 0.5rem;
+    font-size: 0.85rem;
+    color: #475569;
+  }
+  
+  .hash-cell {
+    font-family: 'Courier New', monospace;
+    background: #ecfdf5;
+    border-radius: 6px;
+    padding: 0.5rem;
+    font-size: 0.85rem;
+    color: #059669;
+  }
+  
+  .time-cell {
+    color: #64748b;
+    font-size: 0.9rem;
+  }
+  
+  .filename-cell {
+    font-weight: 500;
+    color: #1e293b;
+  }
+  
+  .loading-spinner {
+    display: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #ff6b6b;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 0.5rem;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: #64748b;
+  }
+  
+  .empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+  
+  @media (max-width: 768px) {
+    .custom-table {
+      font-size: 0.85rem;
+    }
+    
+    .custom-table th,
+    .custom-table td {
+      padding: 0.75rem 0.5rem;
+    }
+    
+    .signature-cell,
+    .hash-cell {
+      font-size: 0.75rem;
+    }
+  }
+</style>
+
+<div class="page-header">
+  <div class="page-header-content">
+    <h1 style="margin: 0; font-size: 2.5rem; font-weight: 700;">📝 Sign Files</h1>
+    <p style="margin: 0.5rem 0 0 0; opacity: 0.9; font-size: 1.1rem;">Secure your documents with digital signatures</p>
+  </div>
+</div>
+
+<div class="upload-section">
+  <form id="signForm" method="post" action="{{ url_for('sign_file') }}" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label for="fileInput" class="form-label" style="font-weight: 600; color: #2d3748; margin-bottom: 0.5rem; display: block;">
+        Choose file to sign
+      </label>
+      <input class="file-input" type="file" id="fileInput" name="file" required>
+    </div>
+    <button type="submit" class="sign-btn">
+      <div class="loading-spinner" id="loadingSpinner"></div>
+      <span id="btnText">🔐 Sign File</span>
+    </button>
+  </form>
+</div>
+
+<div class="signed-files-section">
+  <h3 class="section-title">
+    📋 Signed Files History
+  </h3>
+  <div id="tableContainer">
+    <table class="custom-table" id="signedTable">
+      <thead>
+        <tr>
+          <th>Filename</th>
+          <th>Signature</th>
+          <th>Hash</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+      </tbody>
+    </table>
+    <div id="emptyState" class="empty-state" style="display: none;">
+      <div class="empty-icon">📄</div>
+      <h4>No signed files yet</h4>
+      <p>Upload and sign your first file to see it here!</p>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+async function loadSigned() {
+  try {
+    const res = await fetch("{{ url_for('get_signed_files') }}");
+    const data = await res.json();
+    const tbody = document.querySelector('#tableBody');
+    const emptyState = document.getElementById('emptyState');
+    const table = document.getElementById('signedTable');
+    
+    tbody.innerHTML = '';
+    
+    if (data.files && data.files.length > 0) {
+      table.style.display = 'table';
+      emptyState.style.display = 'none';
+      
+      data.files.forEach(f => {
+        const row = `<tr style="animation: fadeIn 0.5s ease-in;">
+          <td class="filename-cell">${f.filename}</td>
+          <td><div class="signature-cell">${f.signature.slice(0, 20)}...</div></td>
+          <td><div class="hash-cell">${f.file_hash}</div></td>
+          <td class="time-cell">${new Date(f.timestamp).toLocaleString()}</td>
+        </tr>`;
+        tbody.insertAdjacentHTML('beforeend', row);
+      });
+    } else {
+      table.style.display = 'none';
+      emptyState.style.display = 'block';
+    }
+  } catch (error) {
+    console.error('Error loading signed files:', error);
+  }
+}
+
+document.getElementById('signForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  
+  const form = e.target;
+  const data = new FormData(form);
+  const loadingSpinner = document.getElementById('loadingSpinner');
+  const btnText = document.getElementById('btnText');
+  const signBtn = form.querySelector('.sign-btn');
+  
+  // Show loading state
+  loadingSpinner.style.display = 'inline-block';
+  btnText.textContent = 'Signing...';
+  signBtn.disabled = true;
+  
+  try {
+    const res = await fetch(form.action, { method: 'POST', body: data });
+    const result = await res.json();
+    
+    // Show result
+    if (result.success !== false) {
+      // Success animation
+      btnText.textContent = '✅ Signed Successfully!';
+      setTimeout(() => {
+        btnText.textContent = '🔐 Sign File';
+      }, 2000);
+    } else {
+      btnText.textContent = '❌ Sign Failed';
+      setTimeout(() => {
+        btnText.textContent = '🔐 Sign File';
+      }, 2000);
+    }
+    
+    alert(result.message);
+    loadSigned();
+    form.reset();
+    
+  } catch (error) {
+    console.error('Error signing file:', error);
+    btnText.textContent = '❌ Error occurred';
+    setTimeout(() => {
+      btnText.textContent = '🔐 Sign File';
+    }, 2000);
+  } finally {
+    // Hide loading state
+    loadingSpinner.style.display = 'none';
+    signBtn.disabled = false;
+  }
+});
+
+// Add CSS animation
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+`;
+document.head.appendChild(style);
+
+window.onload = loadSigned;
+</script>
+{% endblock %}

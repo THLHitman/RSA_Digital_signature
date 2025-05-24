@@ -1,0 +1,365 @@
+<!-- templates/receiver.html -->
+{% extends "base.html" %}
+{% block title %}Receiver - Verify File{% endblock %}
+{% block content %}
+<div class="container-fluid px-4 py-5">
+  <!-- Header Section -->
+  <div class="row mb-5">
+    <div class="col-12">
+      <div class="text-center">
+        <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 rounded-circle mb-3" style="width: 64px; height: 64px;">
+          <i class="fas fa-shield-alt text-primary fs-2"></i>
+        </div>
+        <h1 class="display-6 fw-bold text-dark mb-2">File Verification Center</h1>
+        <p class="text-muted fs-5">Verify file authenticity using digital signatures</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Verification Form -->
+    <div class="col-lg-6 mb-4">
+      <div class="card shadow-lg border-0 h-100">
+        <div class="card-header bg-gradient text-white border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+          <div class="d-flex align-items-center">
+            <i class="fas fa-file-signature me-2"></i>
+            <h3 class="card-title mb-0 fs-5">Verify File Signature</h3>
+          </div>
+        </div>
+        <div class="card-body p-4">
+          <form id="verifyForm" method="post" action="{{ url_for('verify_file') }}" enctype="multipart/form-data">
+            <div class="mb-4">
+              <label for="fileInputV" class="form-label fw-semibold text-dark">
+                <i class="fas fa-file-upload me-2 text-primary"></i>Choose File to Verify
+              </label>
+              <div class="file-upload-wrapper position-relative">
+                <input class="form-control form-control-lg border-2" type="file" id="fileInputV" name="file" required 
+                       style="border-color: #e3f2fd; transition: all 0.3s ease;">
+                <div class="file-upload-overlay position-absolute top-50 start-50 translate-middle text-muted d-none">
+                  <i class="fas fa-cloud-upload-alt fs-1 mb-2"></i>
+                  <p class="mb-0">Drag & drop or click to select</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <label for="sigInput" class="form-label fw-semibold text-dark">
+                <i class="fas fa-key me-2 text-warning"></i>Digital Signature (Base64)
+              </label>
+              <textarea class="form-control border-2" id="sigInput" name="signature" rows="4" 
+                        placeholder="Paste the base64 encoded signature here..." required
+                        style="border-color: #fff3e0; font-family: 'Courier New', monospace; transition: all 0.3s ease;"></textarea>
+            </div>
+            
+            <div class="d-grid">
+              <button type="submit" class="btn btn-lg fw-semibold text-white border-0 py-3" 
+                      style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); transition: all 0.3s ease;">
+                <i class="fas fa-check-circle me-2"></i>Verify Signature
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Received Files -->
+    <div class="col-lg-6 mb-4">
+      <div class="card shadow-lg border-0 h-100">
+        <div class="card-header bg-gradient text-white border-0" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+              <i class="fas fa-inbox me-2"></i>
+              <h3 class="card-title mb-0 fs-5">Received Files</h3>
+            </div>
+            <div class="badge bg-white text-dark fs-6" id="fileCount">0 files</div>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="received-files-container" style="max-height: 400px; overflow-y: auto;">
+            <ul id="receivedList" class="list-group list-group-flush"></ul>
+            <div id="emptyState" class="text-center p-5 text-muted">
+              <i class="fas fa-folder-open fs-1 mb-3 opacity-50"></i>
+              <p class="mb-0">No files received yet</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status Alert Area -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div id="alertContainer"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="position-fixed top-0 start-0 w-100 h-100 d-none" 
+     style="background: rgba(0,0,0,0.7); z-index: 9999;">
+  <div class="d-flex align-items-center justify-content-center h-100">
+    <div class="text-center text-white">
+      <div class="spinner-border mb-3" style="width: 3rem; height: 3rem;"></div>
+      <h4>Verifying signature...</h4>
+    </div>
+  </div>
+</div>
+
+<style>
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+.form-control:focus {
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25) !important;
+}
+
+.file-upload-wrapper:hover .form-control {
+  border-color: #667eea !important;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+}
+
+.list-group-item {
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.list-group-item:hover {
+  border-left-color: #667eea;
+  background-color: #f8f9ff;
+  transform: translateX(2px);
+}
+
+.received-files-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.received-files-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.received-files-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.received-files-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.alert {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+@keyframes slideInDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.alert-animated {
+  animation: slideInDown 0.5s ease-out;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function loadReceived() {
+  try {
+    const res = await fetch("{{ url_for('get_received_files') }}");
+    const data = await res.json();
+    const list = document.getElementById('receivedList');
+    const emptyState = document.getElementById('emptyState');
+    const fileCount = document.getElementById('fileCount');
+    
+    list.innerHTML = '';
+    
+    if (data.files && data.files.length > 0) {
+      emptyState.style.display = 'none';
+      list.style.display = 'block';
+      
+      data.files.forEach((f, index) => {
+        const fileSize = (f.size / 1024).toFixed(1);
+        const fileIcon = getFileIcon(f.filename);
+        const item = `
+          <li class="list-group-item border-0 py-3">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center">
+                <div class="file-icon me-3 text-primary fs-4">
+                  <i class="${fileIcon}"></i>
+                </div>
+                <div>
+                  <h6 class="mb-1 text-dark fw-semibold">${f.filename}</h6>
+                  <small class="text-muted">
+                    <i class="fas fa-weight me-1"></i>${fileSize} KB
+                  </small>
+                </div>
+              </div>
+              <a href="{{ url_for('download_received', filename='') }}${f.filename}" 
+                 class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                <i class="fas fa-download me-1"></i>Download
+              </a>
+            </div>
+          </li>
+        `;
+        list.insertAdjacentHTML('beforeend', item);
+      });
+      
+      fileCount.textContent = `${data.files.length} file${data.files.length !== 1 ? 's' : ''}`;
+    } else {
+      emptyState.style.display = 'block';
+      list.style.display = 'none';
+      fileCount.textContent = '0 files';
+    }
+  } catch (error) {
+    console.error('Error loading received files:', error);
+    showAlert('Error loading received files', 'danger');
+  }
+}
+
+function getFileIcon(filename) {
+  const ext = filename.split('.').pop().toLowerCase();
+  const iconMap = {
+    'pdf': 'fas fa-file-pdf text-danger',
+    'doc': 'fas fa-file-word text-primary',
+    'docx': 'fas fa-file-word text-primary',
+    'xls': 'fas fa-file-excel text-success',
+    'xlsx': 'fas fa-file-excel text-success',
+    'ppt': 'fas fa-file-powerpoint text-warning',
+    'pptx': 'fas fa-file-powerpoint text-warning',
+    'txt': 'fas fa-file-alt text-secondary',
+    'jpg': 'fas fa-file-image text-info',
+    'jpeg': 'fas fa-file-image text-info',
+    'png': 'fas fa-file-image text-info',
+    'gif': 'fas fa-file-image text-info',
+    'zip': 'fas fa-file-archive text-dark',
+    'rar': 'fas fa-file-archive text-dark'
+  };
+  return iconMap[ext] || 'fas fa-file text-secondary';
+}
+
+function showAlert(message, type = 'info') {
+  const alertContainer = document.getElementById('alertContainer');
+  const alertId = 'alert-' + Date.now();
+  
+  const alertHtml = `
+    <div id="${alertId}" class="alert alert-${type} alert-dismissible fade show alert-animated" role="alert">
+      <div class="d-flex align-items-center">
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+        <span>${message}</span>
+      </div>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  `;
+  
+  alertContainer.insertAdjacentHTML('beforeend', alertHtml);
+  
+  // Auto remove after 5 seconds
+  setTimeout(() => {
+    const alert = document.getElementById(alertId);
+    if (alert) {
+      alert.remove();
+    }
+  }, 5000);
+}
+
+function showLoading(show = true) {
+  const overlay = document.getElementById('loadingOverlay');
+  if (show) {
+    overlay.classList.remove('d-none');
+  } else {
+    overlay.classList.add('d-none');
+  }
+}
+
+document.getElementById('verifyForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  
+  const form = e.target;
+  const data = new FormData(form);
+  
+  showLoading(true);
+  
+  try {
+    const res = await fetch(form.action, { 
+      method: 'POST', 
+      body: data 
+    });
+    
+    const result = await res.json();
+    
+    showLoading(false);
+    
+    if (result.message) {
+      const alertType = result.message.toLowerCase().includes('successfully') || 
+                       result.message.toLowerCase().includes('verified') ? 'success' : 
+                       result.message.toLowerCase().includes('error') || 
+                       result.message.toLowerCase().includes('failed') ? 'danger' : 'info';
+      
+      showAlert(result.message, alertType);
+    }
+    
+    // Reset form if successful
+    if (result.message && result.message.toLowerCase().includes('successfully')) {
+      form.reset();
+    }
+    
+    // Reload received files
+    loadReceived();
+    
+  } catch (error) {
+    showLoading(false);
+    console.error('Error verifying file:', error);
+    showAlert('An error occurred while verifying the file', 'danger');
+  }
+});
+
+// File input enhancements
+document.getElementById('fileInputV').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (file) {
+    showAlert(`Selected file: ${file.name} (${(file.size/1024).toFixed(1)} KB)`, 'info');
+  }
+});
+
+// Signature textarea enhancements
+document.getElementById('sigInput').addEventListener('paste', function() {
+  setTimeout(() => {
+    if (this.value.trim()) {
+      showAlert('Signature pasted successfully', 'success');
+    }
+  }, 100);
+});
+
+// Initialize on page load
+window.onload = function() {
+  loadReceived();
+  
+  // Add some interactive feedback
+  const form = document.getElementById('verifyForm');
+  const inputs = form.querySelectorAll('input, textarea');
+  
+  inputs.forEach(input => {
+    input.addEventListener('focus', function() {
+      this.style.transform = 'scale(1.02)';
+    });
+    
+    input.addEventListener('blur', function() {
+      this.style.transform = 'scale(1)';
+    });
+  });
+};
+</script>
+{% endblock %}

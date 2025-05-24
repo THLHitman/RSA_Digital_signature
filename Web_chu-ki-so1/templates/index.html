@@ -1,0 +1,222 @@
+<!-- templates/index.html -->
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<style>
+  .hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4rem 2rem;
+    border-radius: 20px;
+    margin-bottom: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" fill-opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    animation: float 20s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  .hero-content {
+    position: relative;
+    z-index: 1;
+  }
+  
+  .hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    background: linear-gradient(45deg, #fff, #f8f9ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.3rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+  }
+  
+  .action-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+  
+  .action-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .action-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.5s;
+  }
+  
+  .action-card:hover::before {
+    left: 100%;
+  }
+  
+  .action-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    border-color: #667eea;
+  }
+  
+  .card-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    font-weight: bold;
+  }
+  
+  .sign-card {
+    background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+  }
+  
+  .verify-card {
+    background: linear-gradient(135deg, #4ecdc4, #6bcf8f);
+  }
+  
+  .keys-card {
+    background: linear-gradient(135deg, #feca57, #ff9ff3);
+  }
+  
+  .card-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    color: #2d3748;
+  }
+  
+  .card-description {
+    color: #718096;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 3rem;
+  }
+  
+  .feature-item {
+    text-align: center;
+    padding: 1.5rem;
+    background: rgba(255,255,255,0.7);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+  }
+  
+  .feature-icon {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 1rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+  }
+  
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 2.5rem;
+    }
+    
+    .action-cards {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<div class="hero-section">
+  <div class="hero-content text-center">
+    <h1 class="hero-title">RSA Digital Signature</h1>
+    <p class="hero-subtitle">Secure file signing and verification made simple</p>
+    
+    <div class="feature-grid">
+      <div class="feature-item">
+        <div class="feature-icon">🔒</div>
+        <h6>Secure</h6>
+        <small>RSA encryption ensures your signatures are tamper-proof</small>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">⚡</div>
+        <h6>Fast</h6>
+        <small>Quick signing and verification process</small>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon">✅</div>
+        <h6>Reliable</h6>
+        <small>Verify file integrity and authenticity</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="text-center mb-4">
+    <h2 style="color: #2d3748; font-weight: 600;">Choose Your Action</h2>
+    <p style="color: #718096;">Select what you'd like to do with your files</p>
+  </div>
+  
+  <div class="action-cards">
+    <a href="{{ url_for('sender') }}" class="action-card">
+      <div class="card-icon sign-card">📝</div>
+      <h3 class="card-title">Sign a File</h3>
+      <p class="card-description">Upload and digitally sign your files with RSA encryption to ensure authenticity and integrity.</p>
+    </a>
+    
+    <a href="{{ url_for('receiver') }}" class="action-card">
+      <div class="card-icon verify-card">🔍</div>
+      <h3 class="card-title">Verify a File</h3>
+      <p class="card-description">Verify the digital signature of received files to confirm they haven't been tampered with.</p>
+    </a>
+    
+    <a href="{{ url_for('create_user_keys') }}" class="action-card">
+      <div class="card-icon keys-card">🔑</div>
+      <h3 class="card-title">Generate Keys</h3>
+      <p class="card-description">Create new RSA key pairs for secure digital signing and verification processes.</p>
+    </a>
+  </div>
+</div>
+{% endblock %}

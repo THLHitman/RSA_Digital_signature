@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}RSA Digital Signature{% endblock %}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .navbar-custom {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      padding: 1rem 0;
+      transition: all 0.3s ease;
+    }
+    
+    .navbar-custom:hover {
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: white !important;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+    
+    .navbar-brand:hover {
+      transform: translateY(-2px);
+      color: #f8f9fa !important;
+    }
+    
+    .navbar-brand i {
+      margin-right: 10px;
+      font-size: 1.8rem;
+      background: linear-gradient(45deg, #ffd700, #ffed4e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .nav-link {
+      color: rgba(255, 255, 255, 0.9) !important;
+      font-weight: 500;
+      padding: 0.8rem 1.5rem !important;
+      margin: 0 0.3rem;
+      border-radius: 25px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    .nav-link:hover::before {
+      left: 100%;
+    }
+    
+    .nav-link:hover {
+      color: white !important;
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .nav-link.active {
+      background: rgba(255, 255, 255, 0.2);
+      color: white !important;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .nav-link i {
+      margin-right: 8px;
+      font-size: 1.1rem;
+    }
+    
+    .navbar-toggler {
+      border: none;
+      padding: 4px 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+    
+    .navbar-toggler:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+    
+    .navbar-toggler:focus {
+      box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+    }
+    
+    .navbar-toggler-icon {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    }
+    
+    .container-fluid {
+      max-width: 1200px;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 991.98px) {
+      .navbar-nav {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      .nav-link {
+        margin: 0.2rem 0;
+        text-align: center;
+      }
+    }
+    
+    /* Content styling */
+    .content-wrapper {
+      min-height: calc(100vh - 200px);
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+    
+    .alert {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-left: 4px solid #ffd700;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{{ url_for('index') }}">
+        <i class="fas fa-shield-alt"></i>
+        Digital Signature App
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('sender') }}">
+              <i class="fas fa-paper-plane"></i>
+              Sender
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('receiver') }}">
+              <i class="fas fa-inbox"></i>
+              Receiver
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
+  <div class="content-wrapper">
+    <div class="container mt-4">
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            {{ messages[0] }}
+          </div>
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!-- templates/generate_keys.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-6 col-md-8">
+    <div class="card shadow-lg border-0 key-generation-card">
+      <div class="card-header bg-gradient text-white text-center py-4">
+        <div class="key-icon mb-3">
+          <i class="fas fa-key"></i>
+        </div>
+        <h2 class="mb-0 fw-bold">Generate RSA Key Pair</h2>
+        <p class="mb-0 opacity-75">Create secure public and private keys</p>
+      </div>
+      
+      <div class="card-body p-5">
+        <div class="info-section mb-4">
+          <div class="alert alert-info border-0 bg-light-blue">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Security Notice:</strong> Your private key will be securely generated and stored locally. Never share your private key with anyone.
+          </div>
+        </div>
+        
+        <form action="{{ url_for('create_user_keys') }}" class="needs-validation" novalidate>
+          <div class="form-floating mb-4">
+            <input 
+              type="text" 
+              class="form-control form-control-lg custom-input" 
+              id="username" 
+              name="username" 
+              placeholder="Enter username"
+              required 
+              pattern="[a-zA-Z0-9_-]{3,20}"
+              title="Username must be 3-20 characters long and contain only letters, numbers, underscores, or hyphens"
+            />
+            <label for="username">
+              <i class="fas fa-user me-2"></i>Username
+            </label>
+            <div class="invalid-feedback">
+              Please provide a valid username (3-20 characters, letters/numbers/underscore/hyphen only).
+            </div>
+            <div class="valid-feedback">
+              Looks good!
+            </div>
+          </div>
+          
+          <div class="key-strength-info mb-4">
+            <div class="row text-center">
+              <div class="col-4">
+                <div class="strength-item">
+                  <i class="fas fa-shield-alt text-success"></i>
+                  <div class="fw-bold">2048-bit</div>
+                  <small class="text-muted">Key Length</small>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="strength-item">
+                  <i class="fas fa-lock text-primary"></i>
+                  <div class="fw-bold">RSA</div>
+                  <small class="text-muted">Algorithm</small>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="strength-item">
+                  <i class="fas fa-certificate text-warning"></i>
+                  <div class="fw-bold">Secure</div>
+                  <small class="text-muted">Encryption</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary btn-lg generate-btn">
+              <span class="btn-text">
+                <i class="fas fa-cog me-2"></i>
+                Generate Key Pair
+              </span>
+              <span class="btn-loading d-none">
+                <i class="fas fa-spinner fa-spin me-2"></i>
+                Generating...
+              </span>
+            </button>
+          </div>
+        </form>
+        
+        <div class="security-tips mt-5">
+          <h6 class="fw-bold mb-3">
+            <i class="fas fa-lightbulb text-warning me-2"></i>
+            Security Tips
+          </h6>
+          <ul class="list-unstyled">
+            <li class="mb-2">
+              <i class="fas fa-check-circle text-success me-2"></i>
+              Keep your private key confidential and secure
+            </li>
+            <li class="mb-2">
+              <i class="fas fa-check-circle text-success me-2"></i>
+              Share only your public key with others
+            </li>
+            <li class="mb-2">
+              <i class="fas fa-check-circle text-success me-2"></i>
+              Use strong, unique usernames for identification
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.key-generation-card {
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.key-generation-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+}
+
+.card-header.bg-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+}
+
+.key-icon {
+  font-size: 3rem;
+  opacity: 0.9;
+}
+
+.key-icon i {
+  background: linear-gradient(45deg, #ffd700, #ffed4e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.custom-input {
+  border: 2px solid #e9ecef;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  font-size: 1.1rem;
+  padding: 1rem 1.5rem;
+}
+
+.custom-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+  transform: translateY(-1px);
+}
+
+.form-floating > label {
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.bg-light-blue {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%) !important;
+  border-left: 4px solid #2196f3;
+  border-radius: 10px;
+}
+
+.strength-item {
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 15px;
+  margin: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.strength-item:hover {
+  background: #e9ecef;
+  transform: translateY(-2px);
+}
+
+.strength-item i {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.generate-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 15px;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.generate-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.generate-btn:hover::before {
+  left: 100%;
+}
+
+.generate-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+}
+
+.generate-btn:active {
+  transform: translateY(0);
+}
+
+.security-tips {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 1.5rem;
+  border-radius: 15px;
+  border-left: 4px solid #28a745;
+}
+
+.security-tips ul li {
+  padding: 0.5rem 0;
+  transition: all 0.3s ease;
+}
+
+.security-tips ul li:hover {
+  background: rgba(40, 167, 69, 0.1);
+  padding-left: 1rem;
+  border-radius: 8px;
+}
+
+/* Form validation styles */
+.was-validated .form-control:valid {
+  border-color: #28a745;
+}
+
+.was-validated .form-control:invalid {
+  border-color: #dc3545;
+}
+
+/* Animation for loading state */
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.btn-loading {
+  animation: pulse 1.5s infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .card-body {
+    padding: 2rem !important;
+  }
+  
+  .strength-item {
+    margin: 0.25rem;
+    padding: 0.75rem;
+  }
+  
+  .key-icon {
+    font-size: 2.5rem;
+  }
+}
+</style>
+
+<script>
+// Form validation
+(function() {
+  'use strict';
+  window.addEventListener('load', function() {
+    var forms = document.getElementsByClassName('needs-validation');
+    var validation = Array.prototype.filter.call(forms, function(form) {
+      form.addEventListener('submit', function(event) {
+        if (form.checkValidity() === false) {
+          event.preventDefault();
+          event.stopPropagation();
+        } else {
+          // Show loading state
+          const btn = event.target.querySelector('.generate-btn');
+          const btnText = btn.querySelector('.btn-text');
+          const btnLoading = btn.querySelector('.btn-loading');
+          
+          btnText.classList.add('d-none');
+          btnLoading.classList.remove('d-none');
+          btn.disabled = true;
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  }, false);
+})();
+
+// Real-time username validation
+document.getElementById('username').addEventListener('input', function(e) {
+  const username = e.target.value;
+  const pattern = /^[a-zA-Z0-9_-]{3,20}$/;
+  
+  if (username.length > 0) {
+    if (pattern.test(username)) {
+      e.target.classList.remove('is-invalid');
+      e.target.classList.add('is-valid');
+    } else {
+      e.target.classList.remove('is-valid');
+      e.target.classList.add('is-invalid');
+    }
+  } else {
+    e.target.classList.remove('is-valid', 'is-invalid');
+  }
+});
+</script>
+{% endblock %}

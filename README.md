@@ -18,7 +18,7 @@ This project is a web-based application that allows users to digitally sign and 
 
 ## 📁 Project Structure
 
-WEB_CHU-KI-SO1/
+
 ![{C692E172-E6F2-4627-926F-BB1B546C5EB3}](https://github.com/user-attachments/assets/92b0437a-ae57-4bd5-93c9-c0e0a98585d9)
 
 ## ⚙️ Hướng dẫn cài đặt
